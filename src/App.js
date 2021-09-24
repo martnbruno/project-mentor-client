@@ -1,24 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Projects from "./components/projects/Projects";
+import SignIn from "./components/auth/SignIn";
+import Register from "./components/auth/Register";
+import ProjectState from "./context/projects/ProjectState";
+import TaskState from "./context/tasks/TaskState";
+import AlertState from "./context/alerts/AlertState";
+import AuthState from "./context/auth/AuthState";
+import tokenAuth from "./config/tokenAuth";
+import PrivateRoute from "./components/routes/PrivateRoute";
+
+// Check if there is a token, in order to keep session active even after refresh.
+const token = localStorage.getItem("token");
+if (token) {
+  tokenAuth(token);
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ProjectState>
+      <TaskState>
+        <AlertState>
+          <AuthState>
+            <Router>
+              <Switch>
+                <Route exact path="/" component={SignIn} />
+                <Route exact path="/register" component={Register} />
+                <PrivateRoute exact path="/projects" component={Projects} />
+              </Switch>
+            </Router>
+          </AuthState>
+        </AlertState>
+      </TaskState>
+    </ProjectState>
   );
 }
 
